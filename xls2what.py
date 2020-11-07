@@ -25,7 +25,7 @@ def main():
         config = config[:-3]
     if limit:
         limit = string.split(limit, ",")
-    print("1111", config)
+
     mod = __import__(config)
     if hasattr(mod, "parser_package"):
         parser_package = getattr(mod, "parser_package")
