@@ -2,3 +2,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.DS_Store
+config_example.py

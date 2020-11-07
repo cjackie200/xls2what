@@ -42,28 +42,28 @@
 
 __rev_id__ = """$Id: ExcelFormula.py,v 1.3 2005/08/11 08:53:48 rvk Exp $"""
 
-
 import ExcelFormulaParser, ExcelFormulaLexer, ExcelMagic
 import struct
 from Deco import *
 from antlr import ANTLRException
 
-NoCalcs=0x00
-RecalcAlways=0x01
-CalcOnOpen=0x02
-PartOfShareFormula=0x08
+NoCalcs = 0x00
+RecalcAlways = 0x01
+CalcOnOpen = 0x02
+PartOfShareFormula = 0x08
+
 
 class ErrorCode(object):
     error_msg = dict([(i[1], i[0]) for i in ExcelMagic.error_msg_by_code.items()])
-    
+
     def __init__(self, s):
         self.val = self.error_msg[s]
-    
+
     def int(self): return self.val
+
 
 class Formula(object):
     __slots__ = ["__init__", "text", "rpn", "default", "opts", "__s", "__parser", "__default", "__opts"]
-
 
     def __init__(self, s, default=None, opts=None):
         self.__default = default
@@ -86,7 +86,7 @@ class Formula(object):
 
     @accepts(object, int)
     def set_opts(self, value):
-        assert (int(value) & ~(0x0b)) == 0, "Invalid bits set for opts (%s)"%hex(int(value))
+        assert (int(value) & ~(0x0b)) == 0, "Invalid bits set for opts (%s)" % hex(int(value))
         self.__opts = int(value)
 
     def get_opts(self):
@@ -106,4 +106,3 @@ class Formula(object):
 
         '''
         return struct.pack("<H", len(self.__parser.rpn)) + self.__parser.rpn
-

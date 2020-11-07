@@ -48,7 +48,6 @@
 
 __rev_id__ = """$Id: Bitmap.py,v 1.4 2005/07/20 07:24:11 rvk Exp $"""
 
-
 from BIFFRecords import BiffRecord
 from struct import *
 
@@ -58,7 +57,7 @@ def _size_col(sheet, col):
 
 
 def _size_row(sheet, row):
-    return sheet.row_height(row)     
+    return sheet.row_height(row)
 
 
 def _position_image(sheet, row_start, col_start, x1, y1, width, height):
@@ -122,8 +121,8 @@ def _position_image(sheet, row_start, col_start, x1, y1, width, height):
         y1 -= _size_row(sheet, row_start)
         row_start += 1
     # Initialise end cell to the same as the start cell
-    row_end = row_start   # Row containing bottom right corner of object
-    col_end = col_start   # Col containing lower right corner of object
+    row_end = row_start  # Row containing bottom right corner of object
+    col_end = col_start  # Col containing lower right corner of object
     width = width + x1 - 1
     height = height + y1 - 1
     # Subtract the underlying cell widths to find the end cell of the image
@@ -150,7 +149,7 @@ def _position_image(sheet, row_start, col_start, x1, y1, width, height):
 
 
 class ObjBmpRecord(BiffRecord):
-    _REC_ID = 0x005D    # Record identifier
+    _REC_ID = 0x005D  # Record identifier
 
     def __init__(self, row, col, sheet, im_data_bmp, x, y, scale_x, scale_y):
         # Scale the frame of the image.
@@ -164,37 +163,37 @@ class ObjBmpRecord(BiffRecord):
         to support other Excel objects.
 
         """
-        cObj = 0x0001      # Count of objects in file (set to 1)
-        OT = 0x0008        # Object type. 8 = Picture
-        id = 0x0001        # Object ID
-        grbit = 0x0614     # Option flags
-        colL = col_start    # Col containing upper left corner of object
-        dxL = x1            # Distance from left side of cell
-        rwT = row_start     # Row containing top left corner of object
-        dyT = y1            # Distance from top of cell
-        colR = col_end      # Col containing lower right corner of object
-        dxR = x2            # Distance from right of cell
-        rwB = row_end       # Row containing bottom right corner of object
-        dyB = y2            # Distance from bottom of cell
-        cbMacro = 0x0000    # Length of FMLA structure
+        cObj = 0x0001  # Count of objects in file (set to 1)
+        OT = 0x0008  # Object type. 8 = Picture
+        id = 0x0001  # Object ID
+        grbit = 0x0614  # Option flags
+        colL = col_start  # Col containing upper left corner of object
+        dxL = x1  # Distance from left side of cell
+        rwT = row_start  # Row containing top left corner of object
+        dyT = y1  # Distance from top of cell
+        colR = col_end  # Col containing lower right corner of object
+        dxR = x2  # Distance from right of cell
+        rwB = row_end  # Row containing bottom right corner of object
+        dyB = y2  # Distance from bottom of cell
+        cbMacro = 0x0000  # Length of FMLA structure
         Reserved1 = 0x0000  # Reserved
         Reserved2 = 0x0000  # Reserved
-        icvBack = 0x09      # Background colour
-        icvFore = 0x09      # Foreground colour
-        fls = 0x00          # Fill pattern
-        fAuto = 0x00        # Automatic fill
-        icv = 0x08          # Line colour
-        lns = 0xff          # Line style
-        lnw = 0x01          # Line weight
-        fAutoB = 0x00       # Automatic border
-        frs = 0x0000        # Frame style
-        cf = 0x0009         # Image format, 9 = bitmap
+        icvBack = 0x09  # Background colour
+        icvFore = 0x09  # Foreground colour
+        fls = 0x00  # Fill pattern
+        fAuto = 0x00  # Automatic fill
+        icv = 0x08  # Line colour
+        lns = 0xff  # Line style
+        lnw = 0x01  # Line weight
+        fAutoB = 0x00  # Automatic border
+        frs = 0x0000  # Frame style
+        cf = 0x0009  # Image format, 9 = bitmap
         Reserved3 = 0x0000  # Reserved
-        cbPictFmla = 0x0000 # Length of FMLA structure
+        cbPictFmla = 0x0000  # Length of FMLA structure
         Reserved4 = 0x0000  # Reserved
-        grbit2 = 0x0001     # Option flags
+        grbit2 = 0x0001  # Option flags
         Reserved5 = 0x0000  # Reserved
-        
+
         data = pack("<L", cObj)
         data += pack("<H", OT)
         data += pack("<H", id)
@@ -228,6 +227,7 @@ class ObjBmpRecord(BiffRecord):
 
         self._rec_data = data
 
+
 def _process_bitmap(bitmap):
     """Convert a 24 bit bitmap into the modified internal format used by Windows.
     This is described in BITMAPCOREHEADER and BITMAPCOREINFO structures in the
@@ -253,8 +253,8 @@ def _process_bitmap(bitmap):
     # the data size at offset 0x22.
     #
     size = unpack("<L", data[:4])[0]
-    size -=  0x36   # Subtract size of bitmap header.
-    size +=  0x0C   # Add size of BIFF header.
+    size -= 0x36  # Subtract size of bitmap header.
+    size += 0x0C  # Add size of BIFF header.
     data = data[4:]
     # Remove bitmap data: reserved, offset, header length.
     data = data[12:]
@@ -301,5 +301,3 @@ class ImDataBmpRecord(BiffRecord):
         env = 0x01
         lcb = self.size
         self._rec_data = pack("<HHL", cf, env, lcb) + data
-
-

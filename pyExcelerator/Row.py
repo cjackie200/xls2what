@@ -42,7 +42,6 @@
 
 __rev_id__ = """$Id: Row.py,v 1.6 2005/08/11 08:53:48 rvk Exp $"""
 
-
 import BIFFRecords
 from Deco import *
 from Worksheet import Worksheet
@@ -53,7 +52,7 @@ import datetime as dt
 
 
 class Row(object):
-    __slots__ = ["__init__", 
+    __slots__ = ["__init__",
                  "__adjust_height",
                  "__adjust_bound_col_idx",
                  "__excel_date_dt",
@@ -90,7 +89,7 @@ class Row(object):
                  "space_above",
                  "space_below",
                  "height",
-                 "frmla_opts",]
+                 "frmla_opts", ]
 
     #################################################################
     ## Constructor
@@ -109,24 +108,22 @@ class Row(object):
         self.__height = 0x00FF
         self.__height_in_pixels = 0x11
         self.__frmla_opts = self.__parent.frmla_opts
-        
+
         self.level = 0
         self.collapse = 0
         self.hidden = 0
         self.space_above = 0
         self.space_below = 0
 
-
     def __adjust_height(self, style):
         twips = style.font.height
-        points = float(twips)/20.0
+        points = float(twips) / 20.0
         # Cell height in pixels can be calcuted by following approx. formula:
         # cell height in pixels = font height in points * 83/50 + 2/5
         # It works when screen resolution is 96 dpi 
-        pix = int(round(points*83.0/50.0 + 2.0/5.0))
+        pix = int(round(points * 83.0 / 50.0 + 2.0 / 5.0))
         if pix > self.__height_in_pixels:
             self.__height_in_pixels = pix
-
 
     def __adjust_bound_col_idx(self, *args):
         for arg in args:
@@ -144,7 +141,7 @@ class Row(object):
         else:
             epoch = dt.datetime(1899, 12, 31, 0, 0, 0)
         delta = date - epoch
-        xldate = delta.days + float(delta.seconds) / (24*60*60)
+        xldate = delta.days + float(delta.seconds) / (24 * 60 * 60)
         # Add a day for Excel's missing leap day in 1900
         if xldate > 59:
             xldate += 1
@@ -153,38 +150,31 @@ class Row(object):
     def get_height_in_pixels(self):
         return self.__height_in_pixels
 
-
     @accepts(object, Style.XFStyle)
     def set_style(self, style):
         self.__adjust_height(style)
         self.__xf_index = self.__parent_wb.add_style(style)
 
-            
     def get_xf_index(self):
         return self.__xf_index
 
-    
     def get_cells_count(self):
         return len(self.__cells)
 
-    
     def get_min_col(self):
         return self.__min_col_idx
 
-        
     def get_max_col(self):
         return self.__max_col_idx
 
-        
     def get_str_count(self):
         return self.__total_str
 
-
     def get_row_biff_data(self):
-        height_options = (self.__height & 0x07FFF) 
+        height_options = (self.__height & 0x07FFF)
         height_options |= (self.__has_default_height & 0x01) << 15
 
-        options =  (self.level & 0x07) << 0
+        options = (self.level & 0x07) << 0
         options |= (self.collapse & 0x01) << 4
         options |= (self.hidden & 0x01) << 5
         options |= (0x00 & 0x01) << 6
@@ -193,20 +183,17 @@ class Row(object):
             options |= (0x01 & 0x01) << 7
         else:
             options |= (0x00 & 0x01) << 7
-        options |= (self.__xf_index & 0x0FFF) << 16 
+        options |= (self.__xf_index & 0x0FFF) << 16
         options |= (0x00 & self.space_above) << 28
         options |= (0x00 & self.space_below) << 29
-        
-        return BIFFRecords.RowRecord(self.__idx, self.__min_col_idx, self.__max_col_idx, height_options, options).get()                                              
-                        
+
+        return BIFFRecords.RowRecord(self.__idx, self.__min_col_idx, self.__max_col_idx, height_options, options).get()
 
     def get_cells_biff_data(self):
-        return ''.join([ cell.get_biff_data() for cell in self.__cells ])
-
+        return ''.join([cell.get_biff_data() for cell in self.__cells])
 
     def get_index(self):
         return self.__idx
-
 
     def get_height(self):
         return self.__height
@@ -214,13 +201,14 @@ class Row(object):
     def set_height(self, h):
         if h == None:
             self.__has_default_height = 0x01
-        else: self.__height = h
-    
+        else:
+            self.__height = h
+
     height = property(get_height, set_height)
 
     @accepts(object, int)
     def set_frmla_opts(self, value):
-        assert (int(value) & ~(0x0b)) == 0, "Invalid bits set for frmla_opts (%s)"%hex(int(value))
+        assert (int(value) & ~(0x0b)) == 0, "Invalid bits set for frmla_opts (%s)" % hex(int(value))
         self.__frmla_opts = int(value)
 
     def get_frmla_opts(self):
@@ -228,28 +216,28 @@ class Row(object):
 
     frmla_opts = property(get_frmla_opts, set_frmla_opts)
 
-    @accepts(object, int, (str, unicode, int, long, float, dt.datetime, dt.time, dt.date, ExcelFormula.Formula), (Style.XFStyle, type(None)))
+    @accepts(object, int, (str, unicode, int, long, float, dt.datetime, dt.time, dt.date, ExcelFormula.Formula),
+             (Style.XFStyle, type(None)))
     def write(self, col, label, style):
         self.__adjust_height(style)
         self.__adjust_bound_col_idx(col)
         if isinstance(label, (str, unicode)):
             if len(label) > 0:
-                self.__cells.extend([ Cell.StrCell(self, col, self.__parent_wb.add_style(style), self.__parent_wb.add_str(label)) ])
+                self.__cells.extend(
+                    [Cell.StrCell(self, col, self.__parent_wb.add_style(style), self.__parent_wb.add_str(label))])
                 self.__total_str += 1
             else:
-                self.__cells.extend([ Cell.BlankCell(self, col, self.__parent_wb.add_style(style)) ])
+                self.__cells.extend([Cell.BlankCell(self, col, self.__parent_wb.add_style(style))])
         elif isinstance(label, (int, long, float)):
-            self.__cells.extend([ Cell.NumberCell(self, col, self.__parent_wb.add_style(style), label) ])            
+            self.__cells.extend([Cell.NumberCell(self, col, self.__parent_wb.add_style(style), label)])
         elif isinstance(label, (dt.datetime, dt.time)):
-            self.__cells.extend([ Cell.NumberCell(self, col, self.__parent_wb.add_style(style), self.__excel_date_dt(label)) ])
+            self.__cells.extend(
+                [Cell.NumberCell(self, col, self.__parent_wb.add_style(style), self.__excel_date_dt(label))])
         else:
-            self.__cells.extend([ Cell.FormulaCell(self, col, self.__parent_wb.add_style(style), label) ])
+            self.__cells.extend([Cell.FormulaCell(self, col, self.__parent_wb.add_style(style), label)])
 
-    @accepts(object, int, int, Style.XFStyle)                        
+    @accepts(object, int, int, Style.XFStyle)
     def write_blanks(self, c1, c2, style):
         self.__adjust_height(style)
         self.__adjust_bound_col_idx(c1, c2)
-        self.__cells.extend([ Cell.MulBlankCell(self, c1, c2, self.__parent_wb.add_style(style)) ])
-
-        
-        
+        self.__cells.extend([Cell.MulBlankCell(self, c1, c2, self.__parent_wb.add_style(style))])

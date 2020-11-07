@@ -1,12 +1,13 @@
-#coding: utf-8
+# coding: utf-8
 from XlsParser import XlsParser
 import json
+
 
 class Xls2JsonParser(XlsParser):
     def lines(self):
         startrow = self.sheet.startrow
         lines = []
-        for row in xrange(startrow,self.sheet.max_row):
+        for row in xrange(startrow, self.sheet.max_row):
             line = self.sheet.line(row)
             lines.append(line)
         return lines
