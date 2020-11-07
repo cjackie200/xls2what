@@ -79,27 +79,27 @@ var.     ln or
 [var.]   sz     (optional, only if phonetic=1) Asian Phonetic Settings Block 
 '''
 
-
 __rev_id__ = """$Id: UnicodeUtils.py,v 1.4 2005/07/20 07:24:11 rvk Exp $"""
-
 
 import struct
 
-
 DEFAULT_ENCODING = 'cp1251'
+
 
 def u2ints(ustr):
     ints = [ord(uchr) for uchr in ustr]
     return ints
 
+
 def u2bytes(ustr):
     ints = u2ints(ustr)
-    return struct.pack('<' + 'H'*len(ints), *ints)
+    return struct.pack('<' + 'H' * len(ints), *ints)
+
 
 def upack2(_str):
     try:
         ustr = u2bytes(unicode(_str, 'ascii'))
-        return struct.pack('<HB', len(_str), 0) + _str    
+        return struct.pack('<HB', len(_str), 0) + _str
     except:
         if isinstance(_str, unicode):
             ustr = u2bytes(_str)
@@ -107,10 +107,11 @@ def upack2(_str):
             ustr = u2bytes(unicode(_str, DEFAULT_ENCODING))
         return struct.pack('<HB', len(_str), 1) + ustr
 
+
 def upack1(_str):
     try:
         ustr = u2bytes(unicode(_str, 'ascii'))
-        return struct.pack('BB', len(_str), 0) + _str    
+        return struct.pack('BB', len(_str), 0) + _str
     except:
         if isinstance(_str, unicode):
             ustr = u2bytes(_str)
@@ -118,7 +119,8 @@ def upack1(_str):
             ustr = u2bytes(unicode(_str, DEFAULT_ENCODING))
         return struct.pack('BB', len(_str), 1) + ustr
 
-if __name__ == '__main__':   
+
+if __name__ == '__main__':
     f = file('out0.bin', 'wb')
     f.write(u2bytes('юникод: unicode'))
     f.close()
@@ -130,6 +132,3 @@ if __name__ == '__main__':
     f = file('out2.bin', 'wb')
     f.write(upack2('юникод: unicode'))
     f.close()
-
-
-

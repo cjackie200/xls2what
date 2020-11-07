@@ -42,14 +42,14 @@
 
 __rev_id__ = """$Id: Cell.py,v 1.3 2005/08/11 08:53:48 rvk Exp $"""
 
-
 import struct
 import BIFFRecords
 from ExcelFormula import ErrorCode
 
+
 class StrCell(object):
     __slots__ = ["__init__", "get_biff_data",
-                "__parent", "__idx", "__xf_idx", "__sst_idx"]
+                 "__parent", "__idx", "__xf_idx", "__sst_idx"]
 
     def __init__(self, parent, idx, xf_idx, sst_idx):
         self.__parent = parent
@@ -63,7 +63,7 @@ class StrCell(object):
 
 class BlankCell(object):
     __slots__ = ["__init__", "get_biff_data",
-                "__parent", "__idx", "__xf_idx"]
+                 "__parent", "__idx", "__xf_idx"]
 
     def __init__(self, parent, idx, xf_idx):
         self.__parent = parent
@@ -76,10 +76,10 @@ class BlankCell(object):
 
 class MulBlankCell(object):
     __slots__ = ["__init__", "get_biff_data",
-                "__parent", "__col1", "__col2", "__xf_idx"]
+                 "__parent", "__col1", "__col2", "__xf_idx"]
 
     def __init__(self, parent, col1, col2, xf_idx):
-        assert col1 < col2, '%d < %d is false'%(col1, col2)
+        assert col1 < col2, '%d < %d is false' % (col1, col2)
         self.__parent = parent
         self.__col1 = col1
         self.__col2 = col2
@@ -91,8 +91,7 @@ class MulBlankCell(object):
 
 class NumberCell(object):
     __slots__ = ["__init__", "get_biff_data",
-                "__parent", "__idx", "__xf_idx", "__number"]
-
+                 "__parent", "__idx", "__xf_idx", "__number"]
 
     def __init__(self, parent, idx, xf_idx, number):
         self.__parent = parent
@@ -100,41 +99,40 @@ class NumberCell(object):
         self.__xf_idx = xf_idx
         self.__number = float(number)
 
-
     def get_biff_data(self):
         rk_encoded = 0
 
         packed = struct.pack('<d', self.__number)
 
-        #print self.__number
+        # print self.__number
         w0, w1, w2, w3 = struct.unpack('<4H', packed)
         if w0 == 0 and w1 == 0 and w2 & 0xFFFC == w2:
             # 34 lsb are 0
-            #print "float RK"
+            # print "float RK"
             rk_encoded = (w3 << 16) | w2
             return BIFFRecords.RKRecord(self.__parent.get_index(), self.__idx, self.__xf_idx, rk_encoded).get()
 
         if abs(self.__number) < 0x20000000 and int(self.__number) == self.__number:
-            #print "30-bit integer RK"
+            # print "30-bit integer RK"
             rk_encoded = (2 | (int(self.__number) << 2)) & 0xffffffffL
             return BIFFRecords.RKRecord(self.__parent.get_index(), self.__idx, self.__xf_idx, rk_encoded).get()
 
-        temp = self.__number*100
+        temp = self.__number * 100
         packed100 = struct.pack('<d', temp)
         w0, w1, w2, w3 = struct.unpack('<4H', packed100)
         if w0 == 0 and w1 == 0 and w2 & 0xFFFC == w2:
             # 34 lsb are 0
-            #print "float RK*100"
+            # print "float RK*100"
             rk_encoded = 1 | (w3 << 16) | w2
             return BIFFRecords.RKRecord(self.__parent.get_index(), self.__idx, self.__xf_idx, rk_encoded).get()
 
         if abs(temp) < 0x20000000 and int(temp) == temp:
-            #print "30-bit integer RK*100"
+            # print "30-bit integer RK*100"
             rk_encoded = (3 | (int(temp) << 2)) & 0xffffffffL
             return BIFFRecords.RKRecord(self.__parent.get_index(), self.__idx, self.__xf_idx, rk_encoded).get()
 
-        #print "Number" 
-        #print
+        # print "Number"
+        # print
         return BIFFRecords.NumberRecord(self.__parent.get_index(), self.__idx, self.__xf_idx, self.__number).get()
 
 
@@ -147,14 +145,13 @@ class MulNumberCell(object):
         self.__xf_idx = xf_idx
         self.__sst_idx = sst_idx
 
-
     def get_biff_data(self):
         raise Exception
 
 
 class FormulaCell(object):
     __slots__ = ["__init__", "get_biff_data", "result",
-                "__parent", "__idx", "__xf_idx", "__result", "__opts", "__frmla", "__str"]
+                 "__parent", "__idx", "__xf_idx", "__result", "__opts", "__frmla", "__str"]
 
     def __init__(self, parent, idx, xf_idx, frmla):
         self.__str = None
@@ -165,9 +162,9 @@ class FormulaCell(object):
         self.__opts = frmla.opts != None and frmla.opts or self.__parent.frmla_opts
         self.__frmla = frmla
 
-
     def get_biff_data(self):
-        frmla_block_data = BIFFRecords.FormulaRecord(self.__parent.get_index(), self.__idx, self.__xf_idx, self.__result, self.__opts, self.__frmla.rpn()).get()
+        frmla_block_data = BIFFRecords.FormulaRecord(self.__parent.get_index(), self.__idx, self.__xf_idx,
+                                                     self.__result, self.__opts, self.__frmla.rpn()).get()
         if self.__str:
             frmla_block_data += BIFFRecords.StringRecord(self.__str).get()
         return frmla_block_data
@@ -197,4 +194,3 @@ class FormulaCell(object):
                 ret = struct.pack('B5x', 0x03)
             ret += struct.pack('<H', 0xFFFF)
         return struct.unpack('<Q', ret)[0]
-

@@ -11,7 +11,7 @@ class Py2Js(object):
     table_array_types = (tuple, list)
     table_dict_types = (dict,)
 
-    def __init__(self,tab=4*' ',newline='\n'):
+    def __init__(self, tab=4 * ' ', newline='\n'):
         self.depth = 0
         self.tab = tab
         self.newline = newline
@@ -36,7 +36,7 @@ class Py2Js(object):
             elif obj.find('"') != -1:
                 return "'" + obj + "'"
             return '"' + obj + '"'
-            #return repr(obj)
+            # return repr(obj)
 
         if isinstance(obj, self.table_array_types):
             s = []
@@ -53,10 +53,11 @@ class Py2Js(object):
             s.append("{" + self.newline)
             self.depth += 1
             for key, value in obj.iteritems():
-                if isinstance(key,self.number_types):
+                if isinstance(key, self.number_types):
                     s.append(self.tab * self.depth + ('[%s]' % key) + ' = ' + self._encode(value) + ',' + self.newline)
                 else:
-                    s.append(self.tab * self.depth + ('["%s"]' % key) + ' = ' + self._encode(value) + ',' + self.newline)
+                    s.append(
+                        self.tab * self.depth + ('["%s"]' % key) + ' = ' + self._encode(value) + ',' + self.newline)
             self.depth -= 1
             s.append(self.tab * self.depth + "}")
             return ''.join(s)

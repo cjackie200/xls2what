@@ -42,7 +42,6 @@
 
 __rev_id__ = """$Id: Column.py,v 1.4 2005/07/20 07:24:11 rvk Exp $"""
 
-
 import Style
 from BIFFRecords import ColInfoRecord
 from Deco import *
@@ -56,27 +55,23 @@ class Column(object):
         self.__parent = parent_sheet
         self.__parent_wb = parent_sheet.get_parent()
         self.__xf_index = 0x0F
-        
+
         self.width = 0x0B92
         self.hidden = 0
         self.level = 0
         self.collapse = 0
 
-
     def get_biff_record(self):
-        options =  (self.hidden & 0x01) << 0
+        options = (self.hidden & 0x01) << 0
         options |= (self.level & 0x07) << 8
         options |= (self.collapse & 0x01) << 12
-        
+
         return ColInfoRecord(self.__index, self.__index, self.width, self.__xf_index, options).get()
-        
-        
+
     @accepts(object, Style.XFStyle)
     def set_style(self, style):
         # self.__adjust_height(style)
-        self.__xf_index = self.__parent_wb.add_style(style)        
-        
+        self.__xf_index = self.__parent_wb.add_style(style)
 
     def get_index(self):
         return self.__index
-        

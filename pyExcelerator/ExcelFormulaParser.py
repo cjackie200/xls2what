@@ -22,13 +22,14 @@ from ExcelMagic import *
 
 ### import antlr.Token 
 from antlr import Token
+
 ### >>>The Known Token Types <<<
-SKIP                = antlr.SKIP
-INVALID_TYPE        = antlr.INVALID_TYPE
-EOF_TYPE            = antlr.EOF_TYPE
-EOF                 = antlr.EOF
+SKIP = antlr.SKIP
+INVALID_TYPE = antlr.INVALID_TYPE
+EOF_TYPE = antlr.EOF_TYPE
+EOF = antlr.EOF
 NULL_TREE_LOOKAHEAD = antlr.NULL_TREE_LOOKAHEAD
-MIN_USER_TYPE       = antlr.MIN_USER_TYPE
+MIN_USER_TYPE = antlr.MIN_USER_TYPE
 TRUE_CONST = 4
 FALSE_CONST = 5
 STR_CONST = 6
@@ -57,26 +58,27 @@ SEMICOLON = 28
 CONCAT = 29
 REF2D = 30
 
+
 class Parser(antlr.LLkParser):
     ### user action >>>
     ### user action <<<
-    
+
     def __init__(self, *args, **kwargs):
         antlr.LLkParser.__init__(self, *args, **kwargs)
         self.tokenNames = _tokenNames
         ### __init__ header action >>> 
         self.rpn = ""
         ### __init__ header action <<< 
-        
-    def formula(self):    
-        
+
+    def formula(self):
+
         pass
         self.expr("V")
-    
+
     def expr(self,
-        arg_type
-    ):    
-        
+             arg_type
+             ):
+
         pass
         self.prec0_expr(arg_type)
         while True:
@@ -110,22 +112,21 @@ class Parser(antlr.LLkParser):
                     self.match(LE)
                     op = struct.pack('B', ptgLE)
                 else:
-                        raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-                    
+                    raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
                 self.prec0_expr(arg_type)
                 self.rpn += op
             else:
                 break
-            
-    
+
     def prec0_expr(self,
-        arg_type
-    ):    
-        
+                   arg_type
+                   ):
+
         pass
         self.prec1_expr(arg_type)
         while True:
-            if (self.LA(1)==CONCAT):
+            if (self.LA(1) == CONCAT):
                 pass
                 pass
                 self.match(CONCAT)
@@ -134,16 +135,15 @@ class Parser(antlr.LLkParser):
                 self.rpn += op
             else:
                 break
-            
-    
+
     def prec1_expr(self,
-        arg_type
-    ):    
-        
+                   arg_type
+                   ):
+
         pass
         self.prec2_expr(arg_type)
         while True:
-            if (self.LA(1)==ADD or self.LA(1)==SUB):
+            if (self.LA(1) == ADD or self.LA(1) == SUB):
                 pass
                 la1 = self.LA(1)
                 if False:
@@ -157,22 +157,21 @@ class Parser(antlr.LLkParser):
                     self.match(SUB)
                     op = struct.pack('B', ptgSub)
                 else:
-                        raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-                    
+                    raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
                 self.prec2_expr(arg_type)
                 self.rpn += op
             else:
                 break
-            
-    
+
     def prec2_expr(self,
-        arg_type
-    ):    
-        
+                   arg_type
+                   ):
+
         pass
         self.prec3_expr(arg_type)
         while True:
-            if (self.LA(1)==MUL or self.LA(1)==DIV):
+            if (self.LA(1) == MUL or self.LA(1) == DIV):
                 pass
                 la1 = self.LA(1)
                 if False:
@@ -186,22 +185,21 @@ class Parser(antlr.LLkParser):
                     self.match(DIV)
                     op = struct.pack('B', ptgDiv)
                 else:
-                        raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-                    
+                    raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
                 self.prec3_expr(arg_type)
                 self.rpn += op
             else:
                 break
-            
-    
+
     def prec3_expr(self,
-        arg_type
-    ):    
-        
+                   arg_type
+                   ):
+
         pass
         self.prec4_expr(arg_type)
         while True:
-            if (self.LA(1)==POWER):
+            if (self.LA(1) == POWER):
                 pass
                 pass
                 self.match(POWER)
@@ -210,12 +208,11 @@ class Parser(antlr.LLkParser):
                 self.rpn += op
             else:
                 break
-            
-    
+
     def prec4_expr(self,
-        arg_type
-    ):    
-        
+                   arg_type
+                   ):
+
         pass
         self.prec5_expr(arg_type)
         la1 = self.LA(1)
@@ -225,20 +222,19 @@ class Parser(antlr.LLkParser):
             pass
             self.match(PERCENT)
             self.rpn += struct.pack('B', ptgPercent)
-        elif la1 and la1 in [EOF,EQ,NE,GT,LT,GE,LE,ADD,SUB,MUL,DIV,POWER,RP,SEMICOLON,CONCAT]:
+        elif la1 and la1 in [EOF, EQ, NE, GT, LT, GE, LE, ADD, SUB, MUL, DIV, POWER, RP, SEMICOLON, CONCAT]:
             pass
         else:
-                raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-            
-    
+            raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
     def prec5_expr(self,
-        arg_type
-    ):    
-        
+                   arg_type
+                   ):
+
         la1 = self.LA(1)
         if False:
             pass
-        elif la1 and la1 in [TRUE_CONST,FALSE_CONST,STR_CONST,NUM_CONST,INT_CONST,NAME,LP,REF2D]:
+        elif la1 and la1 in [TRUE_CONST, FALSE_CONST, STR_CONST, NUM_CONST, INT_CONST, NAME, LP, REF2D]:
             pass
             self.primary(arg_type)
         elif la1 and la1 in [SUB]:
@@ -247,13 +243,12 @@ class Parser(antlr.LLkParser):
             self.primary(arg_type)
             self.rpn += struct.pack('B', ptgUminus)
         else:
-                raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-            
-    
+            raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
     def primary(self,
-        arg_type
-    ):    
-        
+                arg_type
+                ):
+
         str_tok = None
         int_tok = None
         num_tok = None
@@ -295,16 +290,16 @@ class Parser(antlr.LLkParser):
             self.match(RP)
             self.rpn += struct.pack("B", ptgParen)
         else:
-            if (self.LA(1)==REF2D) and (_tokenSet_0.member(self.LA(2))):
+            if (self.LA(1) == REF2D) and (_tokenSet_0.member(self.LA(2))):
                 pass
                 ref2d_tok = self.LT(1)
                 self.match(REF2D)
                 r, c = Utils.cell_to_packed_rowcol(ref2d_tok.text)
                 if arg_type == "R":
-                   self.rpn += struct.pack("<B2H", ptgRefR, r, c)
+                    self.rpn += struct.pack("<B2H", ptgRefR, r, c)
                 else:
-                   self.rpn += struct.pack("<B2H", ptgRefV, r, c)
-            elif (self.LA(1)==REF2D) and (self.LA(2)==COLON):
+                    self.rpn += struct.pack("<B2H", ptgRefV, r, c)
+            elif (self.LA(1) == REF2D) and (self.LA(2) == COLON):
                 pass
                 ref2d1_tok = self.LT(1)
                 self.match(REF2D)
@@ -314,144 +309,145 @@ class Parser(antlr.LLkParser):
                 r1, c1 = Utils.cell_to_packed_rowcol(ref2d1_tok.text)
                 r2, c2 = Utils.cell_to_packed_rowcol(ref2d2_tok.text)
                 if arg_type == "R":
-                   self.rpn += struct.pack("<B4H", ptgAreaR, r1, r2, c1, c2)
+                    self.rpn += struct.pack("<B4H", ptgAreaR, r1, r2, c1, c2)
                 else:
-                   self.rpn += struct.pack("<B4H", ptgAreaV, r1, r2, c1, c2)
-            elif (self.LA(1)==NAME) and (_tokenSet_0.member(self.LA(2))):
+                    self.rpn += struct.pack("<B4H", ptgAreaV, r1, r2, c1, c2)
+            elif (self.LA(1) == NAME) and (_tokenSet_0.member(self.LA(2))):
                 pass
                 name_tok = self.LT(1)
                 self.match(NAME)
                 self.rpn += ""
-            elif (self.LA(1)==NAME) and (self.LA(2)==LP):
+            elif (self.LA(1) == NAME) and (self.LA(2) == LP):
                 pass
                 func_tok = self.LT(1)
                 self.match(NAME)
                 if func_tok.text.upper() in std_func_by_name:
-                   (opcode,
-                   min_argc,
-                   max_argc,
-                   func_type,
-                   arg_type_list,
-                   volatile_func) = std_func_by_name[func_tok.text.upper()]
+                    (opcode,
+                     min_argc,
+                     max_argc,
+                     func_type,
+                     arg_type_list,
+                     volatile_func) = std_func_by_name[func_tok.text.upper()]
                 else:
-                   raise Exception, "unknown function: %s" % func_tok.text
+                    raise Exception, "unknown function: %s" % func_tok.text
                 self.match(LP)
-                arg_count=self.expr_list(arg_type_list, min_argc, max_argc)
+                arg_count = self.expr_list(arg_type_list, min_argc, max_argc)
                 self.match(RP)
                 if arg_count > max_argc or arg_count < min_argc:
-                   raise Exception, "%d parameters for function: %s" % (arg_count, func_tok.text)
+                    raise Exception, "%d parameters for function: %s" % (arg_count, func_tok.text)
                 if min_argc == max_argc:
-                   if func_type == "V":
-                       func_ptg = ptgFuncV
-                   elif func_type == "R":
-                       func_ptg = ptgFuncR
-                   elif func_type == "A":
-                       func_ptg = ptgFuncA
-                   else:
-                       raise Exception, "wrong function type"
-                   self.rpn += struct.pack("<BH", func_ptg, opcode)
+                    if func_type == "V":
+                        func_ptg = ptgFuncV
+                    elif func_type == "R":
+                        func_ptg = ptgFuncR
+                    elif func_type == "A":
+                        func_ptg = ptgFuncA
+                    else:
+                        raise Exception, "wrong function type"
+                    self.rpn += struct.pack("<BH", func_ptg, opcode)
                 else:
-                   if func_type == "V":
-                       func_ptg = ptgFuncVarV
-                   elif func_type == "R":
-                       func_ptg = ptgFuncVarR
-                   elif func_type == "A":
-                       func_ptg = ptgFuncVarA
-                   else:
-                       raise Exception, "wrong function type"
-                   self.rpn += struct.pack("<2BH", func_ptg, arg_count, opcode)
+                    if func_type == "V":
+                        func_ptg = ptgFuncVarV
+                    elif func_type == "R":
+                        func_ptg = ptgFuncVarR
+                    elif func_type == "A":
+                        func_ptg = ptgFuncVarA
+                    else:
+                        raise Exception, "wrong function type"
+                    self.rpn += struct.pack("<2BH", func_ptg, arg_count, opcode)
             else:
                 raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-            
-    
+
     def expr_list(self,
-        arg_type_list, min_argc, max_argc
-    ):    
+                  arg_type_list, min_argc, max_argc
+                  ):
         arg_cnt = None
-        
+
         arg_cnt = 0
         arg_type_list = arg_type_list.split()
         arg_type = arg_type_list[arg_cnt]
         la1 = self.LA(1)
         if False:
             pass
-        elif la1 and la1 in [TRUE_CONST,FALSE_CONST,STR_CONST,NUM_CONST,INT_CONST,NAME,SUB,LP,REF2D]:
+        elif la1 and la1 in [TRUE_CONST, FALSE_CONST, STR_CONST, NUM_CONST, INT_CONST, NAME, SUB, LP, REF2D]:
             pass
             self.expr(arg_type)
             arg_cnt += 1
             while True:
-                if (self.LA(1)==SEMICOLON):
+                if (self.LA(1) == SEMICOLON):
                     pass
                     if arg_cnt < len(arg_type_list):
-                       arg_type = arg_type_list[arg_cnt]
+                        arg_type = arg_type_list[arg_cnt]
                     else:
-                       arg_type = arg_type_list[-1]
+                        arg_type = arg_type_list[-1]
                     if arg_type == "...":
-                       arg_type = arg_type_list[-2]
+                        arg_type = arg_type_list[-2]
                     self.match(SEMICOLON)
                     la1 = self.LA(1)
                     if False:
                         pass
-                    elif la1 and la1 in [TRUE_CONST,FALSE_CONST,STR_CONST,NUM_CONST,INT_CONST,NAME,SUB,LP,REF2D]:
+                    elif la1 and la1 in [TRUE_CONST, FALSE_CONST, STR_CONST, NUM_CONST, INT_CONST, NAME, SUB, LP,
+                                         REF2D]:
                         pass
                         self.expr(arg_type)
-                    elif la1 and la1 in [RP,SEMICOLON]:
+                    elif la1 and la1 in [RP, SEMICOLON]:
                         pass
                         self.rpn += struct.pack("B", ptgMissArg)
                     else:
-                            raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-                        
+                        raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
                     arg_cnt += 1
                 else:
                     break
-                
+
         elif la1 and la1 in [RP]:
             pass
         else:
-                raise antlr.NoViableAltException(self.LT(1), self.getFilename())
-            
+            raise antlr.NoViableAltException(self.LT(1), self.getFilename())
+
         return arg_cnt
-    
+
 
 _tokenNames = [
-    "<0>", 
-    "EOF", 
-    "<2>", 
-    "NULL_TREE_LOOKAHEAD", 
-    "TRUE_CONST", 
-    "FALSE_CONST", 
-    "STR_CONST", 
-    "NUM_CONST", 
-    "INT_CONST", 
-    "NAME", 
-    "EQ", 
-    "NE", 
-    "GT", 
-    "LT", 
-    "GE", 
-    "LE", 
-    "ADD", 
-    "SUB", 
-    "MUL", 
-    "DIV", 
-    "POWER", 
-    "PERCENT", 
-    "LP", 
-    "RP", 
-    "LB", 
-    "RB", 
-    "COLON", 
-    "COMMA", 
-    "SEMICOLON", 
-    "CONCAT", 
+    "<0>",
+    "EOF",
+    "<2>",
+    "NULL_TREE_LOOKAHEAD",
+    "TRUE_CONST",
+    "FALSE_CONST",
+    "STR_CONST",
+    "NUM_CONST",
+    "INT_CONST",
+    "NAME",
+    "EQ",
+    "NE",
+    "GT",
+    "LT",
+    "GE",
+    "LE",
+    "ADD",
+    "SUB",
+    "MUL",
+    "DIV",
+    "POWER",
+    "PERCENT",
+    "LP",
+    "RP",
+    "LB",
+    "RB",
+    "COLON",
+    "COMMA",
+    "SEMICOLON",
+    "CONCAT",
     "REF2D"
 ]
-    
+
 
 ### generate bit set
-def mk_tokenSet_0(): 
+def mk_tokenSet_0():
     ### var1
-    data = [ 817888258L, 0L]
+    data = [817888258L, 0L]
     return data
+
+
 _tokenSet_0 = antlr.BitSet(mk_tokenSet_0())
-    

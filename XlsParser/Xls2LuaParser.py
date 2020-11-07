@@ -1,17 +1,18 @@
-#coding: utf-8
+# coding: utf-8
 from XlsParser import XlsParser
 from Py2Lua import Py2Lua
 
+
 class Xls2LuaParser(XlsParser):
-    def __init__(self,sheet,cfg={}):
-        indent = cfg.get("indent",4 * " ")
+    def __init__(self, sheet, cfg={}):
+        indent = cfg.get("indent", 4 * " ")
         colfmt = indent * 2 + "%s = %%(%s)s"
         fmts = []
-        for col in range(0,sheet.max_col):
+        for col in range(0, sheet.max_col):
             if col not in sheet.col2tag:
                 continue
             tag = sheet.col2tag[col]
-            fmts.append(colfmt % (tag,tag))
+            fmts.append(colfmt % (tag, tag))
         id = cfg.get("id")
         if not id:
             line_start = indent + "{\n"
@@ -20,17 +21,17 @@ class Xls2LuaParser(XlsParser):
         line_end = "\n" + indent + "}"
         linefmt = line_start + ",\n".join(fmts) + line_end
         cfg["linefmt"] = linefmt
-        XlsParser.__init__(self,sheet,cfg)
+        XlsParser.__init__(self, sheet, cfg)
 
-    def line(self,row):
-        line = XlsParser.line(self,row)
+    def line(self, row):
+        line = XlsParser.line(self, row)
         for col_name in line.keys():
             col = self.sheet.tag2col[col_name]
             typename = self.sheet.col2type[col]
             if typename == "raw":
                 continue
             v = line[col_name]
-            py2lua = Py2Lua(tab='',newline='')
+            py2lua = Py2Lua(tab='', newline='')
             line[col_name] = py2lua.encode(v)
         return line
 

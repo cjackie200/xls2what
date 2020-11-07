@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # This module was written/ported from PERL Spreadsheet::WriteExcel module
 # The author of the PERL Spreadsheet::WriteExcel module is John McNamara
 # <jmcnamara@cpan.org>
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # See the README.txt distributed with pyXLWriter for more details.
 
 # Portions are (C) Roman V. Kiseliov, 2005
@@ -35,7 +35,6 @@ import re
 from struct import pack
 from ExcelMagic import MAX_ROW, MAX_COL
 
-
 _re_cell_ex = re.compile(r"(\$?)([A-I]?[A-Z])(\$?)(\d+)")
 _re_row_range = re.compile(r"\$?(\d+):\$?(\d+)")
 _re_col_range = re.compile(r"\$?([A-I]?[A-Z]):\$?([A-I]?[A-Z])")
@@ -48,7 +47,7 @@ def col_by_name(colname):
     """
     col = 0
     pow = 1
-    for i in xrange(len(colname)-1, -1, -1):
+    for i in xrange(len(colname) - 1, -1, -1):
         ch = colname[i]
         col += (ord(ch) - ord('A') + 1) * pow
         pow *= 26
@@ -89,8 +88,8 @@ def cell_to_rowcol2(cell):
     row = int(row) - 1
     col = col_by_name(col)
     return row, col
-    
-    
+
+
 def rowcol_to_cell(row, col, row_abs=False, col_abs=False):
     """Convert numeric row/col notation to an Excel cell reference string in
     A1 notation.
@@ -98,7 +97,7 @@ def rowcol_to_cell(row, col, row_abs=False, col_abs=False):
     """
     d = col // 26
     m = col % 26
-    chr1 = ""    # Most significant character in AA1
+    chr1 = ""  # Most significant character in AA1
     if row_abs:
         row_abs = '$'
     else:
@@ -108,7 +107,7 @@ def rowcol_to_cell(row, col, row_abs=False, col_abs=False):
     else:
         col_abs = ''
     if d > 0:
-        chr1 = chr(ord('A') + d  - 1)
+        chr1 = chr(ord('A') + d - 1)
     chr2 = chr(ord('A') + m)
     # Zero index to 1-index
     return col_abs + chr1 + chr2 + row_abs + str(row + 1)
@@ -158,13 +157,20 @@ def cell_to_packed_rowcol(cell):
     row, col, row_abs, col_abs = cell_to_rowcol(cell)
     if col >= MAX_COL:
         raise Exception("Column %s greater than IV in formula" % cell)
-    if row >= MAX_ROW: # this for BIFF8. for BIFF7 available 2^14
+    if row >= MAX_ROW:  # this for BIFF8. for BIFF7 available 2^14
         raise Exception("Row %s greater than %d in formula" % (cell, MAX_ROW))
     col |= int(not row_abs) << 15
     col |= int(not col_abs) << 14
     return row, col
 
-def pts_to_px(pts): return pts*(4.0/3)
-def px_to_pts(px): return px*(3.0/4)
-def tw_to_px(tw): return tw/15.0
-def px_to_tw(px): return px*15
+
+def pts_to_px(pts): return pts * (4.0 / 3)
+
+
+def px_to_pts(px): return px * (3.0 / 4)
+
+
+def tw_to_px(tw): return tw / 15.0
+
+
+def px_to_tw(px): return px * 15
